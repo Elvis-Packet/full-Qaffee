@@ -199,29 +199,40 @@ api.interceptors.response.use(
 
 // Menu Service
 export const menuService = {
-  getItems: () => api.get('/menu/items'),
+  getItems: () => api.get('/admin/menu'),
   getItem: (id) => api.get(`/menu/item/${id}`),
   createItem: (data) => {
-    const formData = new FormData();
-    Object.keys(data).forEach(key => {
-      if (key === 'ingredients' || key === 'add_ons') {
-        formData.append(key, JSON.stringify(data[key]));
-      } else if (key === 'image_url' && data[key] && data[key].startsWith('http')) {
-        // If image_url is a URL, pass it directly
-        formData.append('image_url', data[key]);
-      } else if (key === 'image' && data[key]) {
-        // If image is a file, append it to formData
-        formData.append('image', data[key]);
-      } else if (typeof data[key] === 'boolean') {
-        // Convert boolean values to strings
-        formData.append(key, data[key].toString());
-      } else {
-        formData.append(key, data[key] || '');
-      }
-    });
-    return api.post('/admin/item', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    // If the data contains an image URL, use FormData
+    if (data.image_url && data.image_url.startsWith('http')) {
+      const formData = new FormData();
+      Object.keys(data).forEach(key => {
+        if (key === 'ingredients' || key === 'add_ons') {
+          formData.append(key, JSON.stringify(data[key]));
+        } else if (key === 'image_url') {
+          formData.append('image_url', data[key]);
+        } else if (typeof data[key] === 'boolean') {
+          formData.append(key, data[key].toString());
+        } else {
+          formData.append(key, data[key] || '');
+        }
+      });
+      return api.post('/admin/menu', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    }
+    
+    // Otherwise, send as JSON
+    const cleanData = {
+      name: String(data.name || ''),
+      description: String(data.description || ''),
+      price: Number(data.price),
+      category_id: Number(data.category_id),
+      image_url: String(data.image_url || ''),
+      is_available: Boolean(data.is_available),
+      is_featured: Boolean(data.is_featured)
+    };
+    
+    return api.post('/admin/menu', cleanData);
   },
   updateItem: (id, data) => {
     const formData = new FormData();

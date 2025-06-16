@@ -1,8 +1,15 @@
-from flask import request
+from flask import request, Blueprint, jsonify, current_app
 from ..models import db, User, MenuItem, Category, Order, Payment, UserRole, Promotion
 from .auth import token_required
 from flask_restx import Namespace, Resource, fields
 from datetime import datetime
+from werkzeug.utils import secure_filename
+import os
+
+# Helper function to check allowed file extensions
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Create API namespace
 api = Namespace('admin', description='Admin operations')
@@ -314,7 +321,8 @@ class AdminMenuItem(Resource):
         'price': fields.Float(required=True, description='Item price'),
         'category_id': fields.Integer(required=True, description='Category ID'),
         'image_url': fields.String(description='Item image URL'),
-        'is_available': fields.Boolean(description='Item availability')
+        'is_available': fields.Boolean(description='Item availability'),
+        'is_featured': fields.Boolean(description='Item featured status')
     }))
     @api.response(201, 'Menu item created successfully')
     @api.response(403, 'Unauthorized')
@@ -325,12 +333,51 @@ class AdminMenuItem(Resource):
         if not current_user.is_admin:
             return {'message': 'Unauthorized'}, 403
         
-        data = request.get_json()
+        # Get data from either form data or JSON
+        data = request.form.to_dict() if request.form else request.get_json()
         
-        if not data or not data.get('name') or not data.get('price') or not data.get('category_id'):
-            return {'message': 'Missing required fields'}, 400
+        if not data:
+            return {'message': 'No data provided'}, 400
         
+        # Handle file upload if present
+        if request.files and 'image' in request.files:
+            file = request.files['image']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                data['image_url'] = f'/uploads/{filename}'
+        
+        # Convert and validate data
         try:
+            # Required fields
+            if 'name' not in data:
+                return {'message': 'Name is required'}, 400
+            if 'price' not in data:
+                return {'message': 'Price is required'}, 400
+            if 'category_id' not in data:
+                return {'message': 'Category ID is required'}, 400
+            
+            # Convert data types
+            data['name'] = str(data['name'])
+            data['description'] = str(data.get('description', ''))
+            data['price'] = float(str(data['price']).replace(',', ''))
+            data['category_id'] = int(str(data['category_id']))
+            data['image_url'] = str(data.get('image_url', ''))
+            
+            # Handle boolean fields
+            if 'is_available' in data:
+                if isinstance(data['is_available'], str):
+                    data['is_available'] = data['is_available'].lower() in ['true', '1', 'yes', 'on']
+                else:
+                    data['is_available'] = bool(data['is_available'])
+            
+            if 'is_featured' in data:
+                if isinstance(data['is_featured'], str):
+                    data['is_featured'] = data['is_featured'].lower() in ['true', '1', 'yes', 'on']
+                else:
+                    data['is_featured'] = bool(data['is_featured'])
+            
             item = MenuItem(
                 name=data['name'],
                 description=data.get('description'),
@@ -351,9 +398,12 @@ class AdminMenuItem(Resource):
                     'description': item.description,
                     'price': item.price,
                     'category_id': item.category_id,
-                    'is_available': item.is_available
+                    'is_available': item.is_available,
+                    'image_url': item.image_url
                 }
             }, 201
+        except (ValueError, TypeError) as e:
+            return {'message': f'Invalid data format: {str(e)}'}, 400
         except Exception as e:
             db.session.rollback()
             return {'message': 'Error creating menu item', 'error': str(e)}, 500

@@ -54,7 +54,9 @@ const MenuManager = () => {
 
   // Helper function to get image URL
   const getItemImage = (item) => {
-    if (!item.image_url) return '/images/placeholder-food.jpg';
+    if (!item || !item.image_url) {
+      return '/images/placeholder-food.jpg';
+    }
     
     // If the image_url is a full URL (e.g., https://...), use it directly
     if (item.image_url.startsWith('http')) {
@@ -62,7 +64,8 @@ const MenuManager = () => {
     }
     
     // If it's a relative path from the backend, prepend the API base URL
-    return `${import.meta.env.VITE_API_BASE_URL}${item.image_url}`;
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    return `${baseUrl}${item.image_url}`;
   };
 
   const fetchMenuData = useCallback(async () => {
@@ -73,11 +76,11 @@ const MenuManager = () => {
         menuService.getCategories()
       ]);
 
-      // Handle both array and object response formats
-      const categories = Array.isArray(categoriesRes.data) ? categoriesRes.data : 
-                        categoriesRes.data?.data || [];
-      const items = Array.isArray(itemsRes.data) ? itemsRes.data : 
-                    itemsRes.data?.data || [];
+      // Handle response formats
+      const categories = categoriesRes.data?.data || categoriesRes.data || [];
+      const items = itemsRes.data || [];
+      
+      console.log('Fetched items:', items);  // Debug log
 
       setCategories(categories);
       setMenuItems(items);
@@ -286,17 +289,34 @@ const MenuManager = () => {
 
     try {
       setIsSubmitting(true);
+      // Clean up the data before sending
+      const cleanData = {
+        name: itemToSave.name,
+        description: itemToSave.description || '',
+        price: parseFloat(itemToSave.price),
+        category_id: parseInt(itemToSave.category_id),
+        image_url: itemToSave.image_url || '',
+        is_available: Boolean(itemToSave.is_available),
+        is_featured: Boolean(itemToSave.is_featured)
+      };
+
       if (itemToSave.id) {
-        const response = await menuService.updateItem(itemToSave.id, itemToSave);
+        const response = await menuService.updateItem(itemToSave.id, cleanData);
         const updatedItem = response.data?.data || response.data;
-        setMenuItems(menuItems.map(item => 
+        if (!updatedItem || !updatedItem.id) {
+          throw new Error('Invalid response data from server');
+        }
+        setMenuItems(prevItems => prevItems.map(item => 
           item.id === itemToSave.id ? updatedItem : item
         ));
         toast.success('Item updated successfully');
       } else {
-        const response = await menuService.createItem(itemToSave);
+        const response = await menuService.createItem(cleanData);
         const newItem = response.data?.data || response.data;
-        setMenuItems([...menuItems, newItem]);
+        if (!newItem || !newItem.id) {
+          throw new Error('Invalid response data from server');
+        }
+        setMenuItems(prevItems => [...prevItems, newItem]);
         toast.success('Item created successfully');
       }
       handleCancelEdit();
