@@ -135,7 +135,6 @@ class AdminUsers(Resource):
                     'phone': user.phone,
                     'is_active': user.is_active,
                     'created_at': user.created_at.isoformat() if user.created_at else None,
-                    'reward_points': user.reward_points,
                     'role': user.role.value,
                     'is_admin': user.is_admin,
                     'is_staff': user.is_staff,
@@ -151,7 +150,6 @@ class AdminUserManagement(Resource):
     @api.doc(security='Bearer Auth')
     @api.expect(api.model('UpdateUser', {
         'is_active': fields.Boolean(description='User active status'),
-        'reward_points': fields.Integer(description='User reward points'),
         'role': fields.String(description='User role (customer, staff, admin)')
     }))
     @api.response(200, 'User updated successfully')
@@ -171,9 +169,6 @@ class AdminUserManagement(Resource):
             
             if 'is_active' in data:
                 user.is_active = data['is_active']
-            
-            if 'reward_points' in data:
-                user.reward_points = data['reward_points']
             
             if 'role' in data:
                 try:
@@ -444,17 +439,17 @@ class AdminCategories(Resource):
         
         try:
             categories = Category.query.all()
-            return [{
-                'id': category.id,
-                'name': category.name,
-                'description': category.description,
-                'image_url': category.image_url
-            } for category in categories], 200
+            return {
+                'data': [{
+                    'id': category.id,
+                    'name': category.name,
+                    'description': category.description,
+                    'image_url': category.image_url
+                } for category in categories]
+            }, 200
         except Exception as e:
             return {'message': 'Error fetching categories', 'error': str(e)}, 500
 
-@api.route('/category')
-class AdminCategory(Resource):
     @api.doc(security='Bearer Auth')
     @api.expect(api.model('Category', {
         'name': fields.String(required=True, description='Category name'),
@@ -487,7 +482,7 @@ class AdminCategory(Resource):
             
             return {
                 'message': 'Category created successfully',
-                'category': {
+                'data': {
                     'id': category.id,
                     'name': category.name,
                     'description': category.description,
@@ -498,7 +493,7 @@ class AdminCategory(Resource):
             db.session.rollback()
             return {'message': 'Error creating category', 'error': str(e)}, 500
 
-@api.route('/category/<int:category_id>')
+@api.route('/categories/<int:category_id>')
 class AdminCategoryManagement(Resource):
     @api.doc(security='Bearer Auth')
     @api.expect(api.model('UpdateCategory', {
@@ -530,7 +525,15 @@ class AdminCategoryManagement(Resource):
             
             db.session.commit()
             
-            return {'message': 'Category updated successfully'}, 200
+            return {
+                'message': 'Category updated successfully',
+                'data': {
+                    'id': category.id,
+                    'name': category.name,
+                    'description': category.description,
+                    'image_url': category.image_url
+                }
+            }, 200
         except Exception as e:
             db.session.rollback()
             return {'message': 'Error updating category', 'error': str(e)}, 500

@@ -246,11 +246,11 @@ export const menuService = {
     });
   },
   deleteItem: (id) => api.delete(`/admin/item/${id}`),
-  getCategories: () => api.get('/menu/categories'),
-  getCategory: (id) => api.get(`/menu/categories/${id}`),
+  getCategories: () => api.get('/admin/categories'),
+  getCategory: (id) => api.get(`/admin/categories/${id}`),
   createCategory: (data) => api.post('/admin/categories', data),
   updateCategory: (id, data) => api.put(`/admin/categories/${id}`, data),
-  deleteCategory: (id) => api.delete(`/menu/categories/${id}`),
+  deleteCategory: (id) => api.delete(`/admin/categories/${id}`),
   toggleItemAvailability: (id, isAvailable) => 
     api.patch(`/admin/menu/items/${id}/availability`, { is_available: isAvailable }),
   toggleItemFeatured: (id, isFeatured) => 
