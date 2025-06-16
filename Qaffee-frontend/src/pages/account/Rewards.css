@@ -1,0 +1,369 @@
+/* Rewards.css */
+.rewards-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+
+.loading {
+  color: #2e7d32;
+}
+
+.error {
+  color: #d32f2f;
+  background-color: #fde8e8;
+  border-radius: 8px;
+}
+
+/* Points Balance Section */
+.points-balance {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.points-balance h2 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 1.8rem;
+}
+
+.points-display {
+  display: flex;
+  align-items: baseline;
+  margin: 1.5rem 0;
+}
+
+.points-value {
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: #2e7d32;
+  margin-right: 0.5rem;
+}
+
+.points-label {
+  font-size: 1.5rem;
+  color: #7f8c8d;
+}
+
+.points-history {
+  list-style: none;
+  padding: 0;
+  margin-top: 1.5rem;
+}
+
+.points-history li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.points-history li:last-child {
+  border-bottom: none;
+}
+
+/* Available Rewards Section */
+.available-rewards {
+  margin-bottom: 2rem;
+}
+
+.available-rewards h2 {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.reward-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.reward-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.reward-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 1.4rem;
+}
+
+.reward-card p {
+  color: #7f8c8d;
+  min-height: 4rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.reward-cost {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2e7d32;
+  margin: 1rem 0;
+  padding: 0.5rem 0;
+  border-top: 1px dashed #e0e0e0;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.claim-button {
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.claim-button:hover {
+  background-color: #1b5e20;
+}
+
+.claim-button:disabled,
+.claim-button.disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
+}
+
+/* Referral Program Section */
+.referral-program {
+  background-color: #e3f2fd;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.referral-program h2 {
+  color: #0d47a1;
+  font-size: 1.8rem;
+  margin-top: 0;
+}
+
+.referral-code {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.copy-button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+  margin-left: 1rem;
+}
+
+.copy-button:hover {
+  background-color: #1565c0;
+}
+
+.share-message {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  font-style: italic;
+  color: #555;
+  line-height: 1.5;
+}
+
+.claim-referral {
+  margin-top: 1.5rem;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.claim-referral h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.claim-referral input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin: 1rem 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.claim-referral button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.claim-referral button:hover {
+  background-color: #1565c0;
+}
+
+/* Your Claims Section */
+.your-claims {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.your-claims h2 {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin-top: 0;
+}
+
+.claims-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1.5rem;
+}
+
+.claims-list li {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 4px solid #2e7d32;
+}
+
+.claims-list li.active {
+  border-left-color: #ff9800;
+}
+
+.claims-list li.used {
+  border-left-color: #bdbdbd;
+}
+
+.claims-list li div {
+  display: flex;
+  flex-direction: column;
+}
+
+.claims-list li strong {
+  font-size: 1.1rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.claims-list li span {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+}
+
+.use-button {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+  min-width: 100px;
+}
+
+.use-button:hover {
+  background-color: #f57c00;
+}
+
+.used-badge {
+  background-color: #e0e0e0;
+  color: #666;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .rewards-container {
+    padding: 1rem;
+  }
+  
+  .rewards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .points-display {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .points-value {
+    font-size: 2.5rem;
+  }
+  
+  .claims-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .use-button, .used-badge {
+    margin-top: 1rem;
+    align-self: flex-end;
+  }
+}
+
+/* Animation for reward cards */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reward-card {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.reward-card:nth-child(1) { animation-delay: 0.1s; }
+.reward-card:nth-child(2) { animation-delay: 0.2s; }
+.reward-card:nth-child(3) { animation-delay: 0.3s; }
+.reward-card:nth-child(4) { animation-delay: 0.4s; }

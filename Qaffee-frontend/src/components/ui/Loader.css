@@ -1,0 +1,78 @@
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.loader {
+  margin-bottom: var(--space-3);
+}
+
+.loader-small {
+  transform: scale(0.7);
+}
+
+.loader-medium {
+  transform: scale(1);
+}
+
+.loader-large {
+  transform: scale(1.3);
+}
+
+.loader-text {
+  color: var(--color-primary-600);
+  font-weight: 500;
+  text-align: center;
+}
+
+.coffee-cup {
+  position: relative;
+  width: 50px;
+  height: 60px;
+}
+
+.coffee-cup-body {
+  width: 50px;
+  height: 40px;
+  border: 3px solid var(--color-primary-600);
+  border-radius: 5px 5px 25px 25px;
+  position: relative;
+  overflow: hidden;
+  background-color: white;
+}
+
+.coffee {
+  position: absolute;
+  width: 100%;
+  height: 15px;
+  background-color: var(--color-primary-400);
+  bottom: 0;
+  border-radius: 0 0 20px 20px;
+  animation: fill 2s infinite;
+}
+
+.coffee-cup-handle {
+  width: 15px;
+  height: 20px;
+  border: 3px solid var(--color-primary-600);
+  position: absolute;
+  right: -18px;
+  top: 10px;
+  border-radius: 0 10px 10px 0;
+  border-left: none;
+}
+
+@keyframes fill {
+  0% {
+    height: 0;
+  }
+  50% {
+    height: 30px;
+  }
+  100% {
+    height: 0;
+  }
+}
