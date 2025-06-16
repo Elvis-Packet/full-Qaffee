@@ -1,88 +1,6 @@
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+/* MenuManager.module.css */
 
-.modal {
-  background: white;
-  border-radius: 8px;
-  padding: 2rem;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  position: relative;
-}
-
-.modalTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #292929;
-  margin-bottom: 1.5rem;
-}
-
-.formGroup {
-  margin-bottom: 1.5rem;
-}
-
-.formLabel {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #4b5563;
-  margin-bottom: 0.5rem;
-}
-
-.input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  color: #1f2937;
-  background-color: white;
-  transition: border-color 0.15s ease-in-out;
-}
-
-.input:focus {
-  outline: none;
-  border-color: #059669;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-}
-
-.textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  color: #1f2937;
-  background-color: white;
-  transition: border-color 0.15s ease-in-out;
-  min-height: 100px;
-  resize: vertical;
-}
-
-.textarea:focus {
-  outline: none;
-  border-color: #059669;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-}
-
-.modalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
+/* Base Container Styles */
 .container {
   padding: 2rem;
   max-width: 1200px;
@@ -90,6 +8,14 @@
   margin-top: 2rem;
 }
 
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+/* Header Styles */
 .header {
   margin-bottom: 2rem;
   text-align: center;
@@ -107,12 +33,17 @@
   color: #666;
 }
 
+/* Section Styles */
 .section {
   margin-bottom: 3rem;
   background: white;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
+}
+
+.section + .section {
+  margin-top: 4rem;
 }
 
 .sectionHeader {
@@ -142,7 +73,7 @@
   gap: 1.5rem;
 }
 
-/* Cards */
+/* Card Styles */
 .categoryCard {
   background: white;
   border-radius: 8px;
@@ -239,298 +170,7 @@
   margin-top: auto;
 }
 
-/* Buttons */
-.addButton {
-  background-color: #059669;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-}
-
-.addButton:hover:not(:disabled) {
-  background-color: #047857;
-}
-
-.editButton,
-.deleteButton {
-  flex: 1;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  text-align: center;
-}
-
-.editButton {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.editButton:hover:not(:disabled) {
-  background-color: #2563eb;
-}
-
-.deleteButton {
-  background-color: #ef4444;
-  color: white;
-}
-
-.deleteButton:hover:not(:disabled) {
-  background-color: #dc2626;
-}
-
-.cancelButton {
-  background-color: #6b7280;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-}
-
-.cancelButton:hover:not(:disabled) {
-  background-color: #4b5563;
-}
-
-.submitButton {
-  background-color: #059669;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-}
-
-.submitButton:hover:not(:disabled) {
-  background-color: #047857;
-}
-
-/* Forms */
-.formSection {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background-color: #f9fafb;
-  border-radius: 0.5rem;
-}
-
-.formSectionTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 1rem;
-}
-
-.formGroup {
-  margin-bottom: 1rem;
-}
-
-.formGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.input,
-.select,
-.textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  background-color: white;
-  transition: border-color 0.2s ease;
-}
-
-.input:focus,
-.select:focus,
-.textarea:focus {
-  outline: none;
-  border-color: #059669;
-  ring: 2px #059669;
-}
-
-.textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-/* Image Upload */
-.imageUpload {
-  margin-bottom: 1rem;
-}
-
-.imageInputs {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.imagePreview {
-  max-width: 300px;
-  max-height: 200px;
-  object-fit: cover;
-  margin-bottom: 1rem;
-  border-radius: 0.375rem;
-}
-
-.fileInput {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px dashed #d1d5db;
-  border-radius: 0.375rem;
-  background-color: #f9fafb;
-}
-
-/* Modal */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 50;
-}
-
-.modalContent {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  max-width: 800px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modalTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 1.5rem;
-}
-
-.modalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-/* Add-ons */
-.addonsGrid {
-  display: grid;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.addonItem {
-  display: grid;
-  grid-template-columns: 2fr 1fr auto;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.5rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
-}
-
-/* Checkboxes */
-.checkboxGroup {
-  display: flex;
-  gap: 2rem;
-}
-
-.loaderContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-  width: 100%;
-}
-
-.checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-}
-
-.checkbox input[type="checkbox"] {
-  width: 1rem;
-  height: 1rem;
-  border-radius: 0.25rem;
-  border: 1px solid #d1d5db;
-  cursor: pointer;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-  }
-
-  .title {
-    font-size: 2rem;
-  }
-
-  .categoriesGrid,
-  .itemsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .modalContent {
-    width: 95%;
-    padding: 1rem;
-  }
-
-  .formGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .addonItem {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Loading and Disabled States */
-.loading {
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* Add these new styles for better category display */
-.categoryActions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.categoryCard {
-  border: 1px solid #eee;
-  transition: box-shadow 0.2s;
-}
-
-.categoryCard:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Improve spacing between sections */
-.section + .section {
-  margin-top: 4rem;
-}
-
+/* Badges */
 .unavailableBadge,
 .featuredBadge {
   position: absolute;
@@ -553,4 +193,328 @@ button:disabled {
   left: 0.5rem;
   background-color: #f59e0b;
   color: white;
+}
+
+/* Button Styles */
+.addButton {
+  background-color: #059669;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.addButton:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+.editButton {
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.editButton:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.deleteButton {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  color: white;
+  background-color: #ef4444;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.cancelButton {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  color: #4b5563;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.submitButton {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  color: white;
+  background-color: #059669;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Modal Overlay Styles - Updated with white overlay */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.9); /* White overlay with 90% opacity */
+  backdrop-filter: blur(5px); /* Adds a subtle blur effect */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #292929;
+  margin-bottom: 1.5rem;
+}
+
+/* Form Styles */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formSection {
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.formSection:last-child {
+  margin-bottom: 0;
+}
+
+.formSectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.formGroup:last-child {
+  margin-bottom: 0;
+}
+
+.formLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  color: #1f2937;
+  background-color: white;
+  transition: border-color 0.15s ease-in-out;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Image Upload */
+.imageUpload {
+  margin-top: 1rem;
+}
+
+.imageInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+
+.imagePreview {
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.fileInput {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px dashed #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #f9fafb;
+  cursor: pointer;
+}
+
+.fileInput:hover {
+  border-color: #059669;
+}
+
+/* Checkboxes */
+.checkboxGroup {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.checkbox input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+}
+
+/* Add-ons */
+.addonsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.addonItem {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: white;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .categoriesGrid,
+  .itemsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .modalOverlay {
+    padding: 1rem;
+  }
+
+  .modal {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .addonItem {
+    grid-template-columns: 1fr;
+  }
+
+  .checkboxGroup {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Loading State */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Category Actions */
+.categoryActions {
+  display: flex;
+  gap: 0.5rem;
 }

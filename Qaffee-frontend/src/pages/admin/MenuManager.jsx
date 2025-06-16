@@ -232,73 +232,28 @@ const MenuManager = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const item = editingItem || newItem;
-    
-    if (!validateItemForm(item)) return;
-
-    try {
-      setIsSubmitting(true);
-      const formData = new FormData();
-      
-      // Ensure all fields have a value, even if empty string
-      Object.keys(item).forEach(key => {
-        if (key === 'ingredients' || key === 'add_ons') {
-          formData.append(key, JSON.stringify(item[key] || []));
-        } else if (key === 'image_url') {
-          formData.append('image_url', item[key] || '');
-        } else if (key === 'cloudinary_id') {
-          // Skip cloudinary_id
-          return;
-        } else {
-          formData.append(key, item[key] || '');
-        }
-      });
-
-      if (editingItem && editingItem.id) {
-        const response = await menuService.updateItem(editingItem.id, formData);
-        setMenuItems(menuItems.map(i => i.id === editingItem.id ? response.data : i));
-        handleCancelEdit();
-      } else {
-        const response = await menuService.createItem(formData);
-        setMenuItems([...menuItems, response.data]);
-        resetItemForm();
-      }
-
-      toast.success(`Item ${editingItem ? 'updated' : 'created'} successfully`);
-    } catch (error) {
-      console.error(`Error ${editingItem ? 'updating' : 'creating'} item:`, error);
-      toast.error(`Failed to ${editingItem ? 'update' : 'create'} item`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleEditItem = (item) => {
-    const editedItem = {
-      id: item.id,
-      ...initialItemState,
-      ...item,
-      image_url: item.image_url || '',
-      ingredients: item.ingredients || [],
-      add_ons: item.add_ons || [],
-      is_available: item.is_available ?? true,
-      is_featured: item.is_featured ?? false,
-      name: item.name || '',
-      description: item.description || '',
-      price: item.price || '',
-      category_id: item.category_id || ''
-    };
-    setEditingItem(editedItem);
-    setImagePreview(editedItem.image_url);
-    setImageUrl(editedItem.image_url || '');
+    if (item) {
+      setEditingItem(item);
+      setImagePreview(item.image_url);
+      setImageUrl(item.image_url || '');
+    } else {
+      setEditingItem({
+        ...initialItemState,
+        add_ons: [],
+        is_available: true,
+        is_featured: false
+      });
+      setImagePreview(null);
+      setImageUrl('');
+    }
   };
 
   const handleCancelEdit = () => {
     setEditingItem(null);
     setImagePreview(null);
     setImageUrl('');
+    resetItemForm();
   };
 
   const resetItemForm = () => {
@@ -322,6 +277,35 @@ const MenuManager = () => {
       return false;
     }
     return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const itemToSave = editingItem;
+    if (!validateItemForm(itemToSave)) return;
+
+    try {
+      setIsSubmitting(true);
+      if (itemToSave.id) {
+        const response = await menuService.updateItem(itemToSave.id, itemToSave);
+        const updatedItem = response.data?.data || response.data;
+        setMenuItems(menuItems.map(item => 
+          item.id === itemToSave.id ? updatedItem : item
+        ));
+        toast.success('Item updated successfully');
+      } else {
+        const response = await menuService.createItem(itemToSave);
+        const newItem = response.data?.data || response.data;
+        setMenuItems([...menuItems, newItem]);
+        toast.success('Item created successfully');
+      }
+      handleCancelEdit();
+    } catch (error) {
+      console.error('Error saving item:', error);
+      toast.error(error.response?.data?.message || 'Failed to save item');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading.initial) {
@@ -395,7 +379,7 @@ const MenuManager = () => {
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Menu Items</h2>
           <button
-            onClick={() => setEditingItem({ ...initialItemState })}
+            onClick={() => handleEditItem(null)}
             className={styles.addButton}
           >
             Add Item
@@ -501,8 +485,8 @@ const MenuManager = () => {
 
       {/* Item Modal */}
       {editingItem && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
             <h2 className={styles.modalTitle}>
               {editingItem.id ? 'Edit Item' : 'New Item'}
             </h2>
@@ -510,77 +494,57 @@ const MenuManager = () => {
               {/* Basic Information */}
               <div className={styles.formSection}>
                 <h3 className={styles.formSectionTitle}>Basic Information</h3>
-                <div className={styles.formGrid}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="itemName">Name</label>
-                    <input
-                      type="text"
-                      id="itemName"
-                      value={editingItem ? (editingItem.name || '') : (newItem.name || '')}
-                      onChange={e => {
-                        if (editingItem) {
-                          setEditingItem(prev => ({ ...prev, name: e.target.value }));
-                        } else {
-                          setNewItem(prev => ({ ...prev, name: e.target.value }));
-                        }
-                      }}
-                      className={styles.input}
-                      required
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="itemCategory">Category</label>
-                    <select
-                      id="itemCategory"
-                      value={editingItem ? (editingItem.category_id || '') : (newItem.category_id || '')}
-                      onChange={e => {
-                        if (editingItem) {
-                          setEditingItem(prev => ({ ...prev, category_id: e.target.value }));
-                        } else {
-                          setNewItem(prev => ({ ...prev, category_id: e.target.value }));
-                        }
-                      }}
-                      className={styles.select}
-                      required
-                    >
-                      <option value="">Select Category</option>
-                      {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="itemPrice">Price (KSh)</label>
-                    <input
-                      type="number"
-                      id="itemPrice"
-                      value={editingItem ? (editingItem.price || '') : (newItem.price || '')}
-                      onChange={e => {
-                        if (editingItem) {
-                          setEditingItem(prev => ({ ...prev, price: e.target.value }));
-                        } else {
-                          setNewItem(prev => ({ ...prev, price: e.target.value }));
-                        }
-                      }}
-                      className={styles.input}
-                      min="0"
-                      step="0.01"
-                      required
-                    />
-                  </div>
-                </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="itemDescription">Description</label>
+                  <label className={styles.formLabel} htmlFor="itemName">Name</label>
+                  <input
+                    type="text"
+                    id="itemName"
+                    placeholder="Enter item name"
+                    value={editingItem.name || ''}
+                    onChange={e => setEditingItem(prev => ({ ...prev, name: e.target.value }))}
+                    className={styles.input}
+                    required
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel} htmlFor="itemCategory">Category</label>
+                  <select
+                    id="itemCategory"
+                    value={editingItem.category_id || ''}
+                    onChange={e => setEditingItem(prev => ({ ...prev, category_id: e.target.value }))}
+                    className={styles.select}
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel} htmlFor="itemPrice">Price (KSh)</label>
+                  <input
+                    type="number"
+                    id="itemPrice"
+                    placeholder="Enter price"
+                    value={editingItem.price || ''}
+                    onChange={e => setEditingItem(prev => ({ ...prev, price: e.target.value }))}
+                    className={styles.input}
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel} htmlFor="itemDescription">Description</label>
                   <textarea
                     id="itemDescription"
-                    value={editingItem ? (editingItem.description || '') : (newItem.description || '')}
-                    onChange={e => {
-                      if (editingItem) {
-                        setEditingItem(prev => ({ ...prev, description: e.target.value }));
-                      } else {
-                        setNewItem(prev => ({ ...prev, description: e.target.value }));
-                      }
-                    }}
+                    placeholder="Enter item description"
+                    value={editingItem.description || ''}
+                    onChange={e => setEditingItem(prev => ({ ...prev, description: e.target.value }))}
                     className={styles.textarea}
                     rows={3}
                   />
@@ -591,16 +555,16 @@ const MenuManager = () => {
               <div className={styles.formSection}>
                 <h3 className={styles.formSectionTitle}>Item Image</h3>
                 <div className={styles.imageUpload}>
-                  {(imagePreview || (editingItem && editingItem.image_url)) && (
+                  {imagePreview && (
                     <img
-                      src={imagePreview || transformImage(editingItem.image_url, { width: 300, height: 200, crop: 'fill' })}
+                      src={imagePreview}
                       alt="Preview"
                       className={styles.imagePreview}
                     />
                   )}
                   <div className={styles.imageInputs}>
                     <div className={styles.formGroup}>
-                      <label>Upload Image</label>
+                      <label className={styles.formLabel}>Upload Image</label>
                       <input
                         type="file"
                         accept="image/*"
@@ -609,7 +573,7 @@ const MenuManager = () => {
                       />
                     </div>
                     <div className={styles.formGroup}>
-                      <label>Or Enter Image URL</label>
+                      <label className={styles.formLabel}>Or Enter Image URL</label>
                       <input
                         type="url"
                         value={imageUrl}
@@ -622,35 +586,23 @@ const MenuManager = () => {
                 </div>
               </div>
 
-              {/* Status Options */}
+              {/* Status */}
               <div className={styles.formSection}>
                 <h3 className={styles.formSectionTitle}>Status</h3>
                 <div className={styles.checkboxGroup}>
                   <label className={styles.checkbox}>
                     <input
                       type="checkbox"
-                      checked={editingItem ? (editingItem.is_available ?? true) : (newItem.is_available ?? true)}
-                      onChange={e => {
-                        if (editingItem) {
-                          setEditingItem(prev => ({ ...prev, is_available: e.target.checked }));
-                        } else {
-                          setNewItem(prev => ({ ...prev, is_available: e.target.checked }));
-                        }
-                      }}
+                      checked={editingItem.is_available ?? true}
+                      onChange={e => setEditingItem(prev => ({ ...prev, is_available: e.target.checked }))}
                     />
                     Available
                   </label>
                   <label className={styles.checkbox}>
                     <input
                       type="checkbox"
-                      checked={editingItem ? (editingItem.is_featured ?? false) : (newItem.is_featured ?? false)}
-                      onChange={e => {
-                        if (editingItem) {
-                          setEditingItem(prev => ({ ...prev, is_featured: e.target.checked }));
-                        } else {
-                          setNewItem(prev => ({ ...prev, is_featured: e.target.checked }));
-                        }
-                      }}
+                      checked={editingItem.is_featured ?? false}
+                      onChange={e => setEditingItem(prev => ({ ...prev, is_featured: e.target.checked }))}
                     />
                     Featured
                   </label>
@@ -703,7 +655,8 @@ const MenuManager = () => {
                       <button
                         type="button"
                         onClick={() => {
-                          const newAddons = editingItem.add_ons.filter((_, i) => i !== index);
+                          const newAddons = [...(editingItem.add_ons || [])];
+                          newAddons.splice(index, 1);
                           setEditingItem(prev => ({ ...prev, add_ons: newAddons }));
                         }}
                         className={styles.deleteButton}
@@ -730,56 +683,6 @@ const MenuManager = () => {
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Saving...' : editingItem.id ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-      {/* Category Modal */}
-      {editingCategory && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h2 className={styles.modalTitle}>
-              {editingCategory.id ? 'Edit Category' : 'Add Category'}
-            </h2>
-            <form onSubmit={editingCategory.id ? handleUpdateCategory : handleCreateCategory}>
-              <div className={styles.formGroup}>
-                <label htmlFor="categoryName">Name</label>
-                <input
-                  type="text"
-                  id="categoryName"
-                  value={editingCategory.name}
-                  onChange={(e) => setEditingCategory(prev => ({ ...prev, name: e.target.value }))}
-                  className={styles.input}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="categoryDescription">Description</label>
-                <textarea
-                  id="categoryDescription"
-                  value={editingCategory.description || ''}
-                  onChange={(e) => setEditingCategory(prev => ({ ...prev, description: e.target.value }))}
-                  className={styles.textarea}
-                  rows={3}
-                />
-              </div>
-              <div className={styles.modalActions}>
-                <button
-                  type="button"
-                  onClick={() => setEditingCategory(null)}
-                  className={styles.cancelButton}
-                  disabled={loading.categoryCreate || loading.categoryUpdate}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={loading.categoryCreate || loading.categoryUpdate}
-                >
-                  {loading.categoryCreate || loading.categoryUpdate ? 'Saving...' : editingCategory.id ? 'Update' : 'Create'}
                 </button>
               </div>
             </form>
