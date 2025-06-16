@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'react-toastify'
+import { promotionService } from '../services/api'
 
 const CartContext = createContext()
 
@@ -94,24 +95,27 @@ export function CartProvider({ children }) {
 
   const applyPromoCode = useCallback(async (code) => {
     try {
-      const res = await fetch(`/api/promo-codes/${code}`)
-      const data = await res.json()
+      const response = await promotionService.validatePromotion(code)
+      const data = response.data
 
-      if (data.valid) {
+      if (data.promotion) {
         setPromoCode(code)
-        setDiscount(data.discount)
-        toast.success(`Promo code applied: ${data.discount}% off`)
+        const discountValue = data.promotion.discount_type === 'percentage' 
+          ? data.promotion.discount_value 
+          : (data.promotion.discount_value / cart.total) * 100
+        setDiscount(discountValue)
+        toast.success('Promo code applied successfully')
         return true
       } else {
-        toast.error('Invalid promo code')
+        toast.error(data.message || 'Invalid promo code')
         return false
       }
     } catch (err) {
-      console.error(err)
-      toast.error('Error applying promo code')
+      console.error('Error applying promo code:', err)
+      toast.error(err.response?.data?.message || 'Error applying promo code')
       return false
     }
-  }, [])
+  }, [cart.total])
 
   const removePromoCode = useCallback(() => {
     setPromoCode(null)
@@ -121,8 +125,14 @@ export function CartProvider({ children }) {
 
   const getCartSummary = useCallback(() => {
     const subtotal = cart.total
-    const discountAmount = (subtotal * discount) / 100
-    const total = subtotal - discountAmount
+    let discountAmount = 0
+
+    if (promoCode && discount) {
+      // If discount is greater than 100, it's a fixed amount
+      discountAmount = discount > 100 ? discount : (subtotal * discount) / 100
+    }
+
+    const total = Math.max(0, subtotal - discountAmount)
 
     return {
       subtotal,

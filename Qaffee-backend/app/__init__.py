@@ -138,14 +138,13 @@ def create_app(config_class=None):
     from .routes.locations import api as locations_ns
     from .routes.notifications import api as notifications_ns
     from .routes.support import api as support_ns
-    from .routes.rewards import api as rewards_ns
     from .routes.reviews import api as reviews_ns
-    from .routes.referral import api as referral_ns
     from .routes.admin import api as admin_ns
     from .routes.analytics import api as analytics_ns
     from .routes.cart import api as cart_ns
     from .routes.health import api as health_ns
     from .routes.payment import api as payment_ns
+    from .routes.promotions import api as promotions_ns
     
     api.add_namespace(auth_ns, path='/auth')
     api.add_namespace(menu_ns, path='/menu')
@@ -153,14 +152,13 @@ def create_app(config_class=None):
     api.add_namespace(locations_ns, path='/locations')
     api.add_namespace(notifications_ns, path='/notifications')
     api.add_namespace(support_ns, path='/support')
-    api.add_namespace(rewards_ns, path='/rewards')
     api.add_namespace(reviews_ns, path='/reviews')
-    api.add_namespace(referral_ns, path='/referral')
     api.add_namespace(admin_ns, path='/admin')
     api.add_namespace(analytics_ns, path='/analytics')
     api.add_namespace(cart_ns, path='/cart')
     api.add_namespace(health_ns, path='/health')
     api.add_namespace(payment_ns, path='/api/payments')
+    api.add_namespace(promotions_ns, path='/promotions')
     
     # Initialize API with app
     api.init_app(app)

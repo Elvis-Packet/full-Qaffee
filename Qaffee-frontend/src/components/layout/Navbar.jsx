@@ -69,11 +69,6 @@ function Navbar() {
             <Link to="/branches" className={location.pathname === '/branches' ? 'active' : ''}>
               Locations
             </Link>
-            {isAuthenticated && user?.role === 'customer' && (
-              <Link to="/rewards" className={location.pathname === '/rewards' ? 'active' : ''}>
-                Rewards
-              </Link>
-            )}
           </div>
           
           <div className="navbar-actions">

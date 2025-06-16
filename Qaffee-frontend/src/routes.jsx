@@ -19,8 +19,6 @@ const UserProfile = lazy(() => import('./pages/account/UserProfile'));
 const OrderTracker = lazy(() => import('./pages/orders/OrderTracker'));
 const OrderHistory = lazy(() => import('./pages/orders/OrderHistory'));
 const OrderDetails = lazy(() => import('./pages/orders/OrderDetails'));
-const Rewards = lazy(() => import('./pages/account/Rewards'));
-const Referral = lazy(() => import('./pages/account/Referral'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const MenuManager = lazy(() => import('./pages/admin/MenuManager'));
 const OrderManager = lazy(() => import('./pages/admin/OrderManager'));
@@ -98,16 +96,6 @@ function AppRoutes() {
             <Route path="/orders/:id" element={
               <RoleGuard roles={['customer', 'admin', 'staff']} fallback="/login">
                 <OrderDetails />
-              </RoleGuard>
-            } />
-            <Route path="/rewards" element={
-              <RoleGuard roles={['customer', 'admin']} fallback="/login">
-                <Rewards />
-              </RoleGuard>
-            } />
-            <Route path="/referral" element={
-              <RoleGuard roles={['customer', 'admin']} fallback="/login">
-                <Referral />
               </RoleGuard>
             } />
             

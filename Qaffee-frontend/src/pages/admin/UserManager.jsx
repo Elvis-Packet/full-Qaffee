@@ -21,7 +21,6 @@ const UserManager = () => {
           role: user.role,
           status: user.is_active ? 'active' : 'inactive',
           joinedAt: new Date(user.created_at).toLocaleDateString(),
-          rewardPoints: user.reward_points || 0,
           orderCount: user.order_count || 0
         })));
         setLoading(false);
@@ -144,7 +143,6 @@ const UserManager = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
@@ -182,7 +180,6 @@ const UserManager = () => {
                   </select>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.joinedAt}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.rewardPoints}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.orderCount}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button

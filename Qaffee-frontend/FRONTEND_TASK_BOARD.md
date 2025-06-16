@@ -1,7 +1,7 @@
 # Qaffee Point Frontend MVP Task Board
 
 ## User Roles & Views
-- [ ] Customer: Home, Menu, Cart, Checkout, Order Tracking, Account, Loyalty, Referrals
+- [ ] Customer: Home, Menu, Cart, Checkout, Order Tracking, Account
 - [ ] Admin: Admin Dashboard, Orders Panel, Menu Manager, User Manager, Promo Manager
 - [ ] Staff: Orders Queue, Fulfillment Panel
 - [ ] Guest: Home, Menu, Signup/Login, About
@@ -30,7 +30,6 @@
 - [ ] Delivery and pickup address management
 - [ ] Notifications and promo alerts
 - [ ] Ratings, reviews, and support chat
-- [ ] Loyalty points, referrals, and promotions
 - [ ] Admin panel with user, menu, order, promo management
 - [ ] Staff panel for order fulfillment and status updates
 

@@ -58,15 +58,7 @@ const TermsAndConditions = () => {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">6. Loyalty Program</h2>
-          <p>
-            Our loyalty program benefits are subject to change. Points have no cash value and cannot be
-            transferred. We reserve the right to modify or terminate the program at any time.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">7. Intellectual Property</h2>
+          <h2 className="text-2xl font-semibold mb-4">6. Intellectual Property</h2>
           <p>
             All content on our website and app is our property and protected by copyright laws. You may
             not use, reproduce, or distribute our content without permission.
@@ -74,7 +66,7 @@ const TermsAndConditions = () => {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">8. Limitation of Liability</h2>
+          <h2 className="text-2xl font-semibold mb-4">7. Limitation of Liability</h2>
           <p>
             We strive to provide the best service possible but make no warranties about the reliability
             or accuracy of our services. We are not liable for any indirect, incidental, or consequential
@@ -83,7 +75,7 @@ const TermsAndConditions = () => {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">9. Changes to Terms</h2>
+          <h2 className="text-2xl font-semibold mb-4">8. Changes to Terms</h2>
           <p>
             We reserve the right to modify these terms at any time. Continued use of our services after
             changes constitutes acceptance of the new terms.
@@ -91,7 +83,7 @@ const TermsAndConditions = () => {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">10. Contact Information</h2>
+          <h2 className="text-2xl font-semibold mb-4">9. Contact Information</h2>
           <p>
             For questions about these terms, please contact us at{' '}
             <a href="mailto:legal@qaffee.com" className="text-primary-600 hover:text-primary-700">

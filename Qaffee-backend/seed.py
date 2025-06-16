@@ -15,7 +15,7 @@ def seed_data():
         # db.drop_all()
         # db.create_all()
         
-        # ========== USERS ===========
+        # ========== USERS ==========
         users_data = [
             {
                 'email': 'admin@qaffee.com',

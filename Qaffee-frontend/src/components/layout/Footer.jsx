@@ -53,7 +53,6 @@ function Footer() {
                 <li><Link to="/">Home</Link></li>
                 <li><Link to="/menu">Menu</Link></li>
                 <li><Link to="/branches">Locations</Link></li>
-                <li><Link to="/rewards">Rewards</Link></li>
               </ul>
             </div>
             

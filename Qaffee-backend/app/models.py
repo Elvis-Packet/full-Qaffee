@@ -27,16 +27,6 @@ class TicketPriority(enum.Enum):
     HIGH = "HIGH"
     URGENT = "URGENT"
 
-class LoyaltyPoints(enum.Enum):
-    ORDER_COMPLETED = "order_completed"
-    REWARD_REDEMPTION = "reward_redemption"
-    REFERRAL_BONUS = "referral_bonus"
-    SIGNUP_BONUS = "signup_bonus"
-    REVIEW_BONUS = "review_bonus"
-    BIRTHDAY_BONUS = "birthday_bonus"
-    SPECIAL_PROMOTION = "special_promotion"
-    MANUAL_ADJUSTMENT = "manual_adjustment"
-
 class User(db.Model):
     __tablename__ = 'users'
     
@@ -51,8 +41,6 @@ class User(db.Model):
     is_verified = db.Column(db.Boolean, default=False)  # New field for email verification
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    reward_points = db.Column(db.Integer, default=0)
-    referral_code = db.Column(db.String(10), unique=True, nullable=True)
     
     # Google OAuth fields
     is_google_user = db.Column(db.Boolean, default=False)
@@ -94,8 +82,6 @@ class User(db.Model):
             'role': self.role.value,
             'is_active': self.is_active,
             'created_at': self.created_at.isoformat() if self.created_at else None,
-            'reward_points': self.reward_points,
-            'referral_code': self.referral_code,
             'is_google_user': self.is_google_user,
             'google_picture': self.google_picture,
             'is_admin': self.is_admin,
@@ -300,69 +286,6 @@ class Promotion(db.Model):
     max_uses = db.Column(db.Integer)
     current_uses = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-class LoyaltyTransaction(db.Model):
-    __tablename__ = 'loyalty_transactions'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    points = db.Column(db.Integer, nullable=False)
-    transaction_type = db.Column(db.Enum(LoyaltyPoints), nullable=False)
-    description = db.Column(db.String(200))
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    customer = db.relationship('User', backref='loyalty_history')
-    related_order = db.relationship('Order', backref='loyalty_transactions')
-
-class Reward(db.Model):
-    __tablename__ = 'rewards'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    points_required = db.Column(db.Integer, nullable=False)
-    reward_type = db.Column(db.String(50), nullable=False)  # discount, free_item, cashback
-    reward_value = db.Column(db.Float, nullable=False)  # Amount or percentage
-    is_active = db.Column(db.Boolean, default=True)
-    start_date = db.Column(db.DateTime, nullable=False)
-    end_date = db.Column(db.DateTime, nullable=False)
-    max_claims = db.Column(db.Integer)  # Maximum number of times this reward can be claimed
-    current_claims = db.Column(db.Integer, default=0)
-    terms_conditions = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-class RewardClaim(db.Model):
-    __tablename__ = 'reward_claims'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    reward_id = db.Column(db.Integer, db.ForeignKey('rewards.id'), nullable=False)
-    points_spent = db.Column(db.Integer, nullable=False)
-    status = db.Column(db.String(20), default='active')  # active, used, expired
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))  # Order where reward was used
-    claimed_at = db.Column(db.DateTime, default=datetime.utcnow)
-    used_at = db.Column(db.DateTime)
-    expires_at = db.Column(db.DateTime, nullable=False)
-    
-    user = db.relationship('User', backref='reward_claims')
-    reward = db.relationship('Reward', backref='claims')
-    order = db.relationship('Order', backref='applied_rewards')
-
-class Referral(db.Model):
-    __tablename__ = 'referrals'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    referrer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    referred_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    status = db.Column(db.String(20), default='pending')  # pending, completed
-    points_awarded = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    completed_at = db.Column(db.DateTime)
-    
-    referrer = db.relationship('User', foreign_keys=[referrer_id], backref='referrals_made')
-    referred = db.relationship('User', foreign_keys=[referred_id], backref='referral_received')
 
 class StoreLocation(db.Model):
     __tablename__ = 'store_locations'
