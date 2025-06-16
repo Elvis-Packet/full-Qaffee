@@ -73,8 +73,14 @@ const MenuManager = () => {
         menuService.getCategories()
       ]);
 
-      setCategories(categoriesRes.data || []);
-      setMenuItems(itemsRes.data || []);
+      // Handle both array and object response formats
+      const categories = Array.isArray(categoriesRes.data) ? categoriesRes.data : 
+                        categoriesRes.data?.data || [];
+      const items = Array.isArray(itemsRes.data) ? itemsRes.data : 
+                    itemsRes.data?.data || [];
+
+      setCategories(categories);
+      setMenuItems(items);
     } catch (error) {
       console.error('Error fetching menu data:', error);
       toast.error('Failed to fetch menu data. Please refresh the page.');
@@ -172,7 +178,8 @@ const MenuManager = () => {
     try {
       setLoading(prev => ({ ...prev, categoryCreate: true }));
       const response = await menuService.createCategory(editingCategory);
-      setCategories([...categories, response.data]);
+      const newCategory = response.data?.data || response.data;
+      setCategories([...categories, newCategory]);
       setEditingCategory(null);
       toast.success('Category created successfully');
     } catch (error) {
@@ -442,17 +449,18 @@ const MenuManager = () => {
 
       {/* Category Modal */}
       {editingCategory && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
             <h2 className={styles.modalTitle}>
               {editingCategory.id ? 'Edit Category' : 'New Category'}
             </h2>
             <form onSubmit={editingCategory.id ? handleUpdateCategory : handleCreateCategory}>
               <div className={styles.formGroup}>
-                <label htmlFor="categoryName">Name</label>
+                <label className={styles.formLabel} htmlFor="categoryName">Name</label>
                 <input
                   type="text"
                   id="categoryName"
+                  placeholder="Enter category name"
                   value={editingCategory.name}
                   onChange={e => setEditingCategory(prev => ({ ...prev, name: e.target.value }))}
                   className={styles.input}
@@ -460,9 +468,10 @@ const MenuManager = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="categoryDescription">Description</label>
+                <label className={styles.formLabel} htmlFor="categoryDescription">Description</label>
                 <textarea
                   id="categoryDescription"
+                  placeholder="Enter category description"
                   value={editingCategory.description}
                   onChange={e => setEditingCategory(prev => ({ ...prev, description: e.target.value }))}
                   className={styles.textarea}
@@ -721,6 +730,56 @@ const MenuManager = () => {
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Saving...' : editingItem.id ? 'Update' : 'Create'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Category Modal */}
+      {editingCategory && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h2 className={styles.modalTitle}>
+              {editingCategory.id ? 'Edit Category' : 'Add Category'}
+            </h2>
+            <form onSubmit={editingCategory.id ? handleUpdateCategory : handleCreateCategory}>
+              <div className={styles.formGroup}>
+                <label htmlFor="categoryName">Name</label>
+                <input
+                  type="text"
+                  id="categoryName"
+                  value={editingCategory.name}
+                  onChange={(e) => setEditingCategory(prev => ({ ...prev, name: e.target.value }))}
+                  className={styles.input}
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="categoryDescription">Description</label>
+                <textarea
+                  id="categoryDescription"
+                  value={editingCategory.description || ''}
+                  onChange={(e) => setEditingCategory(prev => ({ ...prev, description: e.target.value }))}
+                  className={styles.textarea}
+                  rows={3}
+                />
+              </div>
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  onClick={() => setEditingCategory(null)}
+                  className={styles.cancelButton}
+                  disabled={loading.categoryCreate || loading.categoryUpdate}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={styles.submitButton}
+                  disabled={loading.categoryCreate || loading.categoryUpdate}
+                >
+                  {loading.categoryCreate || loading.categoryUpdate ? 'Saving...' : editingCategory.id ? 'Update' : 'Create'}
                 </button>
               </div>
             </form>
