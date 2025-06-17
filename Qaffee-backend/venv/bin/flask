@@ -1,4 +1,6 @@
-#!/home/elvis-packet/Qaffee/Qaffee-backend/venv/bin/python3
+#!/bin/sh
+'''exec' "/home/elvis-packet/New-qaffee /all-in-one/Qaffee-backend/venv/bin/python" "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys
