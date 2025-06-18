@@ -14,11 +14,15 @@ export default defineConfig({
     port: process.env.PORT || 8080,
   },
   build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {
           'vendor': ['react', 'react-dom', 'react-router-dom'],
-          'maps': ['@react-google-maps/api'],
+          'maps': ['@react-google-maps/api']
         }
       }
     },

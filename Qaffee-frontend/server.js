@@ -1,7 +1,7 @@
 import express from 'express';
+import compression from 'compression';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -9,38 +9,41 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Check if dist directory exists
-const distPath = join(__dirname, 'dist');
-if (!fs.existsSync(distPath)) {
-  console.error('Error: dist directory not found. Please run npm run build first.');
-  process.exit(1);
-}
+// Enable gzip compression
+app.use(compression());
 
-// Serve static files from the dist directory
-app.use(express.static(distPath));
+// Security headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  next();
+});
+
+// Serve static files with cache control
+app.use(express.static('dist', {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true
+}));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  // Check if index.html exists in dist
-  if (fs.existsSync(join(distPath, 'index.html'))) {
-    res.status(200).send('OK');
-  } else {
-    res.status(500).send('Error: Build files not found');
-  }
+  res.status(200).send('OK');
 });
 
-// Basic error handling middleware
+// Handle SPA routing
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, 'dist', 'index.html'));
+});
+
+// Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
 
-// Serve index.html for all routes to support client-side routing
-app.get('*', (req, res) => {
-  res.sendFile(join(distPath, 'index.html'));
-});
-
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Serving static files from: ${distPath}`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
 }); 
