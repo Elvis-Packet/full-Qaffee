@@ -1,0 +1,15 @@
+name: qaffee-frontend
+services:
+- environment_slug: node-js
+  github:
+    branch: main
+    deploy_on_push: true
+    repo: owner/qaffee-frontend
+  http_port: 8080
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  name: qaffee-frontend
+  routes:
+  - path: /
+  run_command: npm start
+  source_dir: / 
