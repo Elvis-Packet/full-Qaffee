@@ -8,7 +8,7 @@ class WebSocketService {
     this.reconnectDelay = 1000; // Start with 1 second delay
     this.subscribers = new Map();
     this.isConnecting = false;
-    this.baseUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:5000/ws';
+    this.baseUrl = import.meta.env.VITE_WS_URL || 'ws://143.198.224.163/ws';
   }
 
   connect(userId) {

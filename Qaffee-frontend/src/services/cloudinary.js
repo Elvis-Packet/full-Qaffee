@@ -1,4 +1,5 @@
 import axios from 'axios';
+import api from './api';
 
 const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
 const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
@@ -50,7 +51,7 @@ export const uploadImageFromUrl = async (url) => {
 export const deleteImage = async (publicId) => {
   try {
     // This should be handled through your backend to protect your API secret
-    await axios.post('/api/cloudinary/delete', { publicId });
+    await api.post('/cloudinary/delete', { publicId });
   } catch (error) {
     console.error('Error deleting image:', error);
     throw new Error('Failed to delete image');

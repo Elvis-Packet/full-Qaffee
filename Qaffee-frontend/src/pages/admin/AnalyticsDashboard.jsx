@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
+import api from '../../services/api';
 import {
   LineChart,
   Line,
@@ -33,10 +33,10 @@ const AnalyticsDashboard = () => {
     const fetchAnalytics = async () => {
       try {
         const [dashboardRes, salesRes, menuRes, customersRes] = await Promise.all([
-          axios.get('/api/analytics/dashboard'),
-          axios.get('/api/analytics/sales/daily?days=7'),
-          axios.get('/api/analytics/items/popular?limit=5'),
-          axios.get('/api/analytics/users/activity')
+          api.get('/analytics/dashboard'),
+          api.get('/analytics/sales/daily?days=7'),
+          api.get('/analytics/items/popular?limit=5'),
+          api.get('/analytics/users/activity')
         ]);
 
         const dashboardData = dashboardRes.data;

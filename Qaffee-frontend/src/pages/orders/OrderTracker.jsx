@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import api from '../../services/api';
 import './OrderTracker.css';
 
 const OrderTracker = () => {
@@ -33,22 +34,10 @@ const OrderTracker = () => {
 
   const fetchOrderStatus = async () => {
     try {
-      const response = await fetch(`/api/order/${orderId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          setOrder(null);
-        }
-        throw new Error('Failed to fetch order status');
-      }
-      
-      const orderData = await response.json();
+      const response = await api.get(`/order/${orderId}`);
       
       // Transform backend data to frontend format
+      const orderData = response.data;
       const transformedOrder = {
         id: orderData.id,
         status: mapStatusToTimeline(orderData.status),
@@ -69,6 +58,9 @@ const OrderTracker = () => {
       }
     } catch (error) {
       console.error('Error fetching order:', error);
+      if (error.response?.status === 404) {
+        setOrder(null);
+      }
       toast.error('Failed to fetch order status');
       setLoading(false);
       clearInterval(intervalRef.current);

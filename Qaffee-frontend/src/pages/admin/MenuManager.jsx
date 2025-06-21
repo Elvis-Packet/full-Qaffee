@@ -64,7 +64,7 @@ const MenuManager = () => {
     }
     
     // If it's a relative path from the backend, prepend the API base URL
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://143.198.224.163';
     return `${baseUrl}${item.image_url}`;
   };
 
