@@ -58,7 +58,7 @@ def create_app(config_class=None):
     # Enable CORS with support for OPTIONS preflight requests
     CORS(app, 
          resources={r"/*": {
-             "origins": ["http://localhost:8080", "http://127.0.0.1:8080", "http://192.168.88.249:8080"],
+             "origins": ["http://localhost:8080", "http://127.0.0.1:8080", "http://192.168.88.249:8080", "http://143.198.224.163"],
              "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
              "allow_headers": ["Content-Type", "Authorization"],
              "expose_headers": ["Content-Range", "X-Content-Range"],
@@ -73,7 +73,7 @@ def create_app(config_class=None):
             response = app.make_default_options_response()
             # Add CORS headers to response
             origin = request.headers.get('Origin')
-            if origin in ["http://localhost:8080", "http://127.0.0.1:8080", "http://192.168.88.249:8080"]:
+            if origin in ["http://localhost:8080", "http://127.0.0.1:8080", "http://192.168.88.249:8080", "http://143.198.224.163"]:
                 response.headers["Access-Control-Allow-Origin"] = origin
             response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
             response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
