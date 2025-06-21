@@ -19,7 +19,7 @@ function Home() {
         
         // Fetch all menu items from backend
         const response = await api.get('/menu/items')
-        const items = response.data || []
+        const items = response.data.items || []
         
         // Only set menu items if we have valid data
         if (Array.isArray(items) && items.length > 0) {
