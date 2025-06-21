@@ -2,7 +2,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 
 // API base URL
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://209.38.134.207:8080'
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'
 
 // Rate limiting configuration
 const MAX_RETRIES = 3;
