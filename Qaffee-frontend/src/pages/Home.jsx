@@ -19,45 +19,50 @@ function Home() {
         
         // Fetch all menu items from backend
         const response = await api.get('/menu/items')
-        setMenuItems(response.data)
+        const items = response.data || []
+        
+        // Only set menu items if we have valid data
+        if (Array.isArray(items) && items.length > 0) {
+          setMenuItems(items)
+        } else {
+          // Fallback to mock data if API returns empty or invalid data
+          setMenuItems([
+            {
+              id: 1,
+              name: 'Hummus & Pita',
+              description: 'Creamy chickpea dip with warm pita bread',
+              price: 450.0,
+              image_url: 'https://images.unsplash.com/photo-1633945274309-2c16cf9687a4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+            },
+            {
+              id: 2,
+              name: 'Falafel Plate',
+              description: 'Crispy chickpea fritters with tahini sauce',
+              price: 550.0,
+              image_url: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+            },
+            {
+              id: 3,
+              name: 'Shawarma Wrap',
+              description: 'Tender spiced meat with vegetables in flatbread',
+              price: 650.0,
+              image_url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+            },
+            {
+              id: 4,
+              name: 'Classic Beef Burger',
+              description: 'Juicy beef patty with fresh toppings',
+              price: 750.0,
+              image_url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1598&q=80',
+            },
+          ])
+        }
         
         setLoading(false)
       } catch (err) {
         console.error('Error fetching home data:', err)
         setError('Failed to load data. Please try again later.')
         setLoading(false)
-        
-        // Fallback to mock data if API fails (for demo purposes)
-        setMenuItems([
-          {
-            id: 1,
-            name: 'Hummus & Pita',
-            description: 'Creamy chickpea dip with warm pita bread',
-            price: 450.0,
-            image_url: 'https://images.unsplash.com/photo-1633945274309-2c16cf9687a4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-          },
-          {
-            id: 2,
-            name: 'Falafel Plate',
-            description: 'Crispy chickpea fritters with tahini sauce',
-            price: 550.0,
-            image_url: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-          },
-          {
-            id: 3,
-            name: 'Shawarma Wrap',
-            description: 'Tender spiced meat with vegetables in flatbread',
-            price: 650.0,
-            image_url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-          },
-          {
-            id: 4,
-            name: 'Classic Beef Burger',
-            description: 'Juicy beef patty with fresh toppings',
-            price: 750.0,
-            image_url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1598&q=80',
-          },
-        ])
       }
     }
     
@@ -77,6 +82,13 @@ function Home() {
     }
   }, [menuItems.length, isPaused])
 
+  // Ensure currentPromoIndex is valid
+  useEffect(() => {
+    if (currentPromoIndex >= menuItems.length) {
+      setCurrentPromoIndex(0)
+    }
+  }, [menuItems.length, currentPromoIndex])
+
   if (loading) {
     return (
       <div className="home-page">
@@ -86,6 +98,16 @@ function Home() {
       </div>
     )
   }
+
+  // Get current menu item safely
+  const getCurrentMenuItem = () => {
+    if (!Array.isArray(menuItems) || menuItems.length === 0) {
+      return null
+    }
+    return menuItems[currentPromoIndex] || null
+  }
+
+  const currentItem = getCurrentMenuItem()
 
   return (
     <div className="home-page">
@@ -112,7 +134,7 @@ function Home() {
         <div className="container">
           <h2 className="section-title">Our Menu Highlights</h2>
           
-          {menuItems.length > 0 ? (
+          {currentItem ? (
             <div 
               className="highlights-container"
               onMouseEnter={() => setIsPaused(true)}
@@ -121,16 +143,16 @@ function Home() {
               <div className="highlight-card">
                 <div className="highlight-image">
                   <img 
-                    src={menuItems[currentPromoIndex].image_url || menuItems[currentPromoIndex].image} 
-                    alt={menuItems[currentPromoIndex].name} 
+                    src={currentItem.image_url || currentItem.image || '/images/placeholder-food.jpg'} 
+                    alt={currentItem.name || 'Menu item'} 
                   />
                 </div>
                 <div className="highlight-content">
-                  <h3 className="highlight-title">{menuItems[currentPromoIndex].name}</h3>
-                  <p className="highlight-description">{menuItems[currentPromoIndex].description}</p>
+                  <h3 className="highlight-title">{currentItem.name || 'Menu item'}</h3>
+                  <p className="highlight-description">{currentItem.description || 'No description available'}</p>
                   <div className="highlight-price">
-                    {typeof menuItems[currentPromoIndex].price === 'number'
-                      ? `KSh ${menuItems[currentPromoIndex].price.toFixed(2)}`
+                    {typeof currentItem.price === 'number'
+                      ? `KSh ${currentItem.price.toFixed(2)}`
                       : 'Price not available'}
                   </div>
                   <div className="highlight-indicator">
@@ -142,12 +164,14 @@ function Home() {
                       />
                     ))}
                   </div>
-                  <Link 
-                    to={`/menu/item/${menuItems[currentPromoIndex].id}`} 
-                    className="btn btn-secondary"
-                  >
-                    View Details
-                  </Link>
+                  {currentItem.id && (
+                    <Link 
+                      to={`/menu/item/${currentItem.id}`} 
+                      className="btn btn-secondary"
+                    >
+                      View Details
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
