@@ -128,7 +128,11 @@ function Home() {
                 <div className="highlight-content">
                   <h3 className="highlight-title">{menuItems[currentPromoIndex].name}</h3>
                   <p className="highlight-description">{menuItems[currentPromoIndex].description}</p>
-                  <div className="highlight-price">KSh {menuItems[currentPromoIndex].price.toFixed(2)}</div>
+                  <div className="highlight-price">
+                    {typeof menuItems[currentPromoIndex].price === 'number'
+                      ? `KSh ${menuItems[currentPromoIndex].price.toFixed(2)}`
+                      : 'Price not available'}
+                  </div>
                   <div className="highlight-indicator">
                     {menuItems.map((_, index) => (
                       <span 
