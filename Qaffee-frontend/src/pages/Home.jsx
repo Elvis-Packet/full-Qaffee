@@ -19,13 +19,27 @@ function Home() {
         
         // Fetch all menu items from backend
         const response = await api.get('/menu/items')
-        const items = response.data.items || []
         
-        // Only set menu items if we have valid data
-        if (Array.isArray(items) && items.length > 0) {
-          setMenuItems(items)
+        // Validate response structure
+        if (!response || !response.data || !Array.isArray(response.data.items)) {
+          throw new Error('Invalid response format from server')
+        }
+        
+        const items = response.data.items
+        
+        // Validate each item has required fields
+        const validItems = items.filter(item => (
+          item && 
+          typeof item === 'object' &&
+          item.id &&
+          item.name &&
+          typeof item.price === 'number'
+        ))
+        
+        if (validItems.length > 0) {
+          setMenuItems(validItems)
         } else {
-          // Fallback to mock data if API returns empty or invalid data
+          // Fallback to mock data if no valid items
           setMenuItems([
             {
               id: 1,
@@ -61,8 +75,40 @@ function Home() {
         setLoading(false)
       } catch (err) {
         console.error('Error fetching home data:', err)
-        setError('Failed to load data. Please try again later.')
+        setError(err.message || 'Failed to load data. Please try again later.')
         setLoading(false)
+        
+        // Set fallback data on error
+        setMenuItems([
+          {
+            id: 1,
+            name: 'Hummus & Pita',
+            description: 'Creamy chickpea dip with warm pita bread',
+            price: 450.0,
+            image_url: 'https://images.unsplash.com/photo-1633945274309-2c16cf9687a4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+          },
+          {
+            id: 2,
+            name: 'Falafel Plate',
+            description: 'Crispy chickpea fritters with tahini sauce',
+            price: 550.0,
+            image_url: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+          },
+          {
+            id: 3,
+            name: 'Shawarma Wrap',
+            description: 'Tender spiced meat with vegetables in flatbread',
+            price: 650.0,
+            image_url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+          },
+          {
+            id: 4,
+            name: 'Classic Beef Burger',
+            description: 'Juicy beef patty with fresh toppings',
+            price: 750.0,
+            image_url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1598&q=80',
+          },
+        ])
       }
     }
     
@@ -145,13 +191,17 @@ function Home() {
                   <img 
                     src={currentItem.image_url || currentItem.image || '/images/placeholder-food.jpg'} 
                     alt={currentItem.name || 'Menu item'} 
+                    onError={(e) => {
+                      e.target.src = '/images/placeholder-food.jpg'
+                      e.target.onerror = null // Prevent infinite loop
+                    }}
                   />
                 </div>
                 <div className="highlight-content">
                   <h3 className="highlight-title">{currentItem.name || 'Menu item'}</h3>
                   <p className="highlight-description">{currentItem.description || 'No description available'}</p>
                   <div className="highlight-price">
-                    {typeof currentItem.price === 'number'
+                    {currentItem && typeof currentItem.price === 'number' 
                       ? `KSh ${currentItem.price.toFixed(2)}`
                       : 'Price not available'}
                   </div>
