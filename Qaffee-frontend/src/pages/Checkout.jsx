@@ -9,6 +9,7 @@ import PaymentForm from '../components/PaymentForm';
 import MpesaPayment from '../components/payment/MpesaPayment';
 import DeliveryLocationPicker from '../components/DeliveryLocationPicker';
 import orderService from '../services/orderService';
+import api from '../services/api';
 import './Checkout.css'; 
 
 const BRANCH_HOURS = {
@@ -98,41 +99,73 @@ function Checkout() {
 
   const summary = getCartSummary();
 
+  const syncCartToBackend = async () => {
+    try {
+      console.log('Syncing cart items to backend:', cart.items);
+      
+      // Add each item to the backend cart
+      for (const item of cart.items) {
+        const cartData = {
+          menu_item_id: item.id,  // Use menu_item_id instead of item_id
+          quantity: item.quantity,
+          customization: item.options || {}
+        };
+        
+        console.log('Adding item to cart:', cartData);
+        console.log('API base URL:', api.defaults.baseURL);
+        console.log('Auth header:', api.defaults.headers.common.Authorization);
+        
+        const response = await api.post('/cart', cartData);
+        console.log('Cart response:', response.data);
+      }
+    } catch (error) {
+      console.error('Error syncing cart to backend:', error);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Error headers:', error.response?.headers);
+      throw new Error(`Failed to sync cart to backend: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
   const handleOrderCreation = async (paymentDetails) => {
     try {
       setLoading(true);
 
-      // Create order data
+      // Check if cart has items
+      if (!cart.items || cart.items.length === 0) {
+        throw new Error('Cart is empty');
+      }
+
+      // Sync frontend cart to backend first
+      await syncCartToBackend();
+
+      // Create order data - only send what the backend expects
       const orderData = {
-        items: cart.items.map(item => ({
-          menu_item_id: item.id,
-          quantity: item.quantity,
-          customization: customizations[item.id] || {}
-        })),
-        delivery_method: deliveryMethod,
-        payment_method: paymentMethod,
-        total_amount: summary.total,
-        is_delivery: deliveryMethod === 'delivery',
-        delivery_location: deliveryMethod === 'delivery' ? locationData : null,
-        pickup_branch: deliveryMethod === 'pickup' ? selectedBranch : null,
-        payment_details: paymentDetails,
-        status: 'pending'
+        is_delivery: deliveryMethod === 'delivery'
+        // delivery_address_id will be null for pickup orders
       };
+
+      console.log('Creating order with data:', orderData);
+      console.log('Delivery method:', deliveryMethod);
 
       // Create the order
       const response = await orderService.createOrder(orderData);
       
-      if (!response.id) {
+      console.log('Order creation response:', response);
+      
+      if (!response.order_id) {
         throw new Error('Invalid response from server');
       }
 
       // Set the order ID
-      setOrderId(response.id);
+      setOrderId(response.order_id);
 
       // Return the order ID for M-Pesa payment
-      return response.id;
+      return response.order_id;
     } catch (error) {
       console.error('Error creating order:', error);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error status:', error.response?.status);
       toast.error('Failed to create order. Please try again.');
       throw error;
     } finally {
@@ -371,16 +404,22 @@ function Checkout() {
             toast.error('Please fill in all card details');
             return;
           }
-          await handleOrderCreation({
+          const orderId = await handleOrderCreation({
             type: 'card',
             details: cardDetails
           });
+          // Navigate to order confirmation
+          clearCart();
+          navigate(`/orders/${orderId}`);
           break;
         case 'cash':
-          await handleOrderCreation({
+          const cashOrderId = await handleOrderCreation({
             type: 'cash',
             details: { payOnDelivery: true }
           });
+          // Navigate to order confirmation
+          clearCart();
+          navigate(`/orders/${cashOrderId}`);
           break;
         default:
           toast.error('Invalid payment method');

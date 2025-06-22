@@ -3,7 +3,7 @@ import api from './api';
 const orderService = {
   createOrder: async (orderData) => {
     try {
-      const response = await api.post('/api/orders', orderData);
+      const response = await api.post('/orders/checkout', orderData);
       return response.data;
     } catch (error) {
       throw error;
@@ -12,7 +12,7 @@ const orderService = {
 
   getOrder: async (orderId) => {
     try {
-      const response = await api.get(`/api/orders/${orderId}`);
+      const response = await api.get(`/orders/${orderId}`);
       return response.data;
     } catch (error) {
       throw error;
@@ -21,7 +21,7 @@ const orderService = {
 
   updateOrder: async (orderId, updateData) => {
     try {
-      const response = await api.put(`/api/orders/${orderId}`, updateData);
+      const response = await api.put(`/orders/${orderId}`, updateData);
       return response.data;
     } catch (error) {
       throw error;
@@ -30,7 +30,7 @@ const orderService = {
 
   getOrderStatus: async (orderId) => {
     try {
-      const response = await api.get(`/api/orders/${orderId}/status`);
+      const response = await api.get(`/orders/${orderId}/status`);
       return response.data;
     } catch (error) {
       throw error;
