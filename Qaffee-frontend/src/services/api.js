@@ -311,4 +311,10 @@ const orderService = {
   getOrderTracking: (id) => api.get(`/orders/${id}/tracking`)
 };
 
+// Delivery Address Service
+export async function createDeliveryAddress(address) {
+  const response = await api.post('/locations/delivery-addresses', address);
+  return response.data;
+}
+
 export { api as default, promotionService, orderService };

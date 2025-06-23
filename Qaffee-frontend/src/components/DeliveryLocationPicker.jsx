@@ -23,6 +23,7 @@ function DeliveryLocationPicker({ onLocationSelect }) {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
   const mapRef = useRef();
+  const [locationError, setLocationError] = useState('');
 
   // Fetch search suggestions from Nominatim
   useEffect(() => {
@@ -51,16 +52,29 @@ function DeliveryLocationPicker({ onLocationSelect }) {
       click: (e) => {
         const { lat, lng } = e.latlng;
         setMarkerPosition([lat, lng]);
-
+        setLocationError('');
         fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
           .then(res => res.json())
           .then(data => {
+            const address = data?.display_name || `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
             const loc = {
-              address: data.display_name,
+              address,
               coordinates: { lat, lng },
             };
             setSelectedLocation(loc);
-            setSearch(data.display_name);
+            setSearch(address);
+            // Zoom in for precision
+            if (mapRef.current) mapRef.current.setView([lat, lng], 17);
+          })
+          .catch((err) => {
+            setLocationError('Could not fetch address. Using coordinates only.');
+            const fallbackLoc = {
+              address: `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`,
+              coordinates: { lat, lng },
+            };
+            setSelectedLocation(fallbackLoc);
+            setSearch(fallbackLoc.address);
+            if (mapRef.current) mapRef.current.setView([lat, lng], 17);
           });
       },
     });
@@ -75,44 +89,96 @@ function DeliveryLocationPicker({ onLocationSelect }) {
     setMapCenter([lat, lng]);
     setMarkerPosition([lat, lng]);
     setSelectedLocation({
-      address: suggestion.display_name,
+      address: suggestion.display_name || `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`,
       coordinates: { lat, lng },
     });
     setSuggestions([]);
-    setSearch(suggestion.display_name);
+    setSearch(suggestion.display_name || `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`);
 
     if (mapRef.current) {
-      mapRef.current.setView([lat, lng], 16);
+      mapRef.current.setView([lat, lng], 17);
     }
+  };
+
+  // Use browser geolocation
+  const handleUseMyLocation = () => {
+    setLocationError('');
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setMapCenter([lat, lng]);
+        setMarkerPosition([lat, lng]);
+        if (mapRef.current) mapRef.current.setView([lat, lng], 17);
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+          .then(res => res.json())
+          .then(data => {
+            const address = data.display_name || `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
+            setSelectedLocation({
+              address,
+              coordinates: { lat, lng },
+            });
+            setSearch(address);
+          })
+          .catch(() => {
+            setLocationError('Could not fetch address. Using coordinates only.');
+            setSelectedLocation({
+              address: `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`,
+              coordinates: { lat, lng },
+            });
+            setSearch(`Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`);
+          });
+      },
+      (err) => {
+        setLocationError('Could not get your location.');
+      }
+    );
   };
 
   const handleRecenter = () => {
     setMapCenter(DEFAULT_CENTER);
     if (mapRef.current) {
-      mapRef.current.setView(DEFAULT_CENTER, 13);
+      mapRef.current.setView(DEFAULT_CENTER, 16);
     }
   };
 
   return (
-    <div style={{ height: '350px', marginBottom: '1rem', position: 'relative' }}>
-      {/* Recenter button */}
-      <button
-        onClick={handleRecenter}
-        style={{
-          position: 'absolute',
-          top: 10,
-          right: 10,
-          zIndex: 1100,
-          background: '#fff',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          padding: '6px 12px',
-          cursor: 'pointer',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
-        }}
-      >
-        Recenter
-      </button>
+    <div style={{ height: '370px', marginBottom: '1rem', position: 'relative' }}>
+      {/* Recenter and Geolocate buttons */}
+      <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1100, display: 'flex', gap: 8 }}>
+        <button
+          onClick={handleRecenter}
+          style={{
+            background: '#fff',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            padding: '6px 12px',
+            cursor: 'pointer',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+          }}
+        >
+          Recenter
+        </button>
+        <button
+          onClick={handleUseMyLocation}
+          style={{
+            background: '#fff',
+            border: '1px solid #4CAF50',
+            borderRadius: '4px',
+            padding: '6px 12px',
+            cursor: 'pointer',
+            color: '#166534',
+            fontWeight: 500,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+          }}
+        >
+          Use my location
+        </button>
+      </div>
       {/* Search input */}
       <div style={{ position: 'relative', marginBottom: '0.5rem' }}>
         <input
@@ -156,7 +222,7 @@ function DeliveryLocationPicker({ onLocationSelect }) {
       {/* Map display */}
       <MapContainer
         center={mapCenter}
-        zoom={13}
+        zoom={16}
         style={{ height: '260px', width: '100%' }}
         whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
       >
@@ -167,10 +233,16 @@ function DeliveryLocationPicker({ onLocationSelect }) {
         <MapClickHandler />
         {markerPosition && <Marker position={markerPosition} />}
       </MapContainer>
-      {/* Location display */}
+      {/* Location display and error */}
       <p style={{ marginTop: '0.5rem' }}>
-        {selectedLocation ? `Selected: ${selectedLocation.address}` : 'Click on map or search for your delivery location'}
+        {selectedLocation ? (
+          <span>
+            <strong>Delivery Address:</strong> {selectedLocation.address}<br />
+            <strong>Coordinates:</strong> {selectedLocation.coordinates.lat}, {selectedLocation.coordinates.lng}
+          </span>
+        ) : 'Click on map or search for your delivery location'}
       </p>
+      {locationError && <div style={{ color: 'red', fontSize: '0.95em' }}>{locationError}</div>}
     </div>
   );
 }

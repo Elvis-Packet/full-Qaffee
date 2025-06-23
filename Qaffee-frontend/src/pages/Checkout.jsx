@@ -9,6 +9,7 @@ import MpesaPayment from '../components/payment/MpesaPayment';
 import DeliveryLocationPicker from '../components/DeliveryLocationPicker';
 import orderService from '../services/orderService';
 import api from '../services/api';
+import { createDeliveryAddress } from '../services/api';
 import './Checkout.css';
 
 const BRANCH_HOURS = {
@@ -74,27 +75,61 @@ function Checkout() {
 
     await syncCartToBackend();
 
+    let delivery_address_id = null;
     // Validate delivery address for delivery orders
     if (deliveryMethod === 'delivery') {
       if (!locationData || !locationData.address || typeof locationData.address !== 'string' || !locationData.address.trim()) {
         throw new Error('A valid delivery address is required.');
       }
+      // Parse address fields for backend
+      // For simplicity, split address by comma (improve as needed)
+      const addressParts = locationData.address.split(',').map(s => s.trim());
+      const address_line1 = addressParts[0] || locationData.address;
+      const city = addressParts[2] || addressParts[1] || 'Nairobi';
+      const state = addressParts[3] || 'Nairobi';
+      const postal_code = addressParts[4] || '00000';
+      const country = addressParts[5] || 'Kenya';
+      const latitude = locationData.coordinates?.lat;
+      const longitude = locationData.coordinates?.lng;
+      // Create address in backend
+      const addressPayload = {
+        address_line1,
+        address_line2: '',
+        city,
+        state,
+        postal_code,
+        country,
+        latitude,
+        longitude,
+        is_default: false,
+        label: 'Delivery',
+      };
+      const addressRes = await createDeliveryAddress(addressPayload);
+      delivery_address_id = addressRes.id;
     }
 
     const orderData = {
       is_delivery: deliveryMethod === 'delivery',
-      ...(deliveryMethod === 'delivery' && locationData && {
-        delivery_address: locationData.address,
-        delivery_coordinates: locationData.coordinates,
+      ...(deliveryMethod === 'delivery' && delivery_address_id && {
+        delivery_address_id,
       }),
       // For pickup, do not include delivery_address
     };
 
-    const response = await orderService.createOrder(orderData);
+    console.log('Order payload:', orderData);
 
-    if (!response.order_id) throw new Error('Invalid server response');
-    setOrderId(response.order_id);
-    return response.order_id;
+    try {
+      const response = await orderService.createOrder(orderData);
+      
+      if (!response.order_id) throw new Error('Invalid server response');
+      setOrderId(response.order_id);
+      return response.order_id;
+    } catch (error) {
+      // Log the full backend response for debugging
+      console.error('Order error:', error.response?.data || error);
+      toast.error(error.response?.data?.message || 'Failed to process order');
+      throw error;
+    }
   };
 
   const handlePaymentComplete = async (paymentDetails) => {
