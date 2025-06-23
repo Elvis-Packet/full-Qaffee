@@ -42,10 +42,10 @@ const OrderDetails = () => {
         <h2 className="not-found-title">Order not found</h2>
         <p className="not-found-message">The order you're looking for doesn't exist</p>
         <Link
-          to="/orders/history"
+          to="/"
           className="back-button"
         >
-          Back to Orders
+          Return Home
         </Link>
       </div>
     );
@@ -57,13 +57,13 @@ const OrderDetails = () => {
         <div className="order-details-header">
           <h1>Order Details</h1>
           <Link
-            to="/orders/history"
+            to="/"
             className="back-link"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to Orders
+            Return Home
           </Link>
         </div>
 
