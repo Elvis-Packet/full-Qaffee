@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Toaster } from 'react-hot-toast';
 import { infoRoutes } from './pages/info/routes';
+import 'leaflet/dist/leaflet.css';
 
 // Lazy loading pages with preload
 const Home = lazy(() => import('./pages/Home'));
