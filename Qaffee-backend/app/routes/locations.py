@@ -243,4 +243,26 @@ class MapCoordinates(Resource):
         except Exception as e:
             return {'message': 'Error fetching map coordinates', 'error': str(e)}, 500
 
+@api.route('/delivery-addresses')
+class DeliveryAddressList(Resource):
+    @api.expect(delivery_address_model)
+    @token_required
+    def post(self, current_user):
+        data = request.get_json()
+        # Validate and create DeliveryAddress
+        address = DeliveryAddress(
+            user_id=current_user.id,
+            address_line1=data['address_line1'],
+            city=data['city'],
+            state=data['state'],
+            postal_code=data['postal_code'],
+            country=data['country'],
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude'),
+            # ... other fields
+        )
+        db.session.add(address)
+        db.session.commit()
+        return {'id': address.id}, 201
+
 # ... (keep the rest of your existing endpoints: StoreLocations, DeliveryAddresses, etc.)

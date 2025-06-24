@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import orderService from '../../services/orderService';
 import './OrderDetails.css';
 
 const OrderDetails = () => {
@@ -11,25 +12,13 @@ const OrderDetails = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        setOrder({
-          id,
-          date: '2024-03-15T14:30:00',
-          status: 'completed',
-          items: [
-            { name: 'Cappuccino', quantity: 2, price: 8.00, notes: 'Extra hot' },
-            { name: 'Croissant', quantity: 1, price: 9.50, notes: 'Butter on side' }
-          ],
-          subtotal: 25.50,
-          tax: 2.55,
-          total: 28.05,
-          paymentMethod: 'Credit Card',
-          deliveryAddress: '123 Coffee Street, Bean City, BC 12345',
-          specialInstructions: 'Please ring doorbell on delivery'
-        });
-        setLoading(false);
+        const data = await orderService.getOrder(id);
+        setOrder(data);
       } catch (error) {
         console.error('Error fetching order details:', error);
         toast.error('Failed to fetch order details');
+        setOrder(null);
+      } finally {
         setLoading(false);
       }
     };
@@ -53,10 +42,10 @@ const OrderDetails = () => {
         <h2 className="not-found-title">Order not found</h2>
         <p className="not-found-message">The order you're looking for doesn't exist</p>
         <Link
-          to="/orders/history"
+          to="/"
           className="back-button"
         >
-          Back to Orders
+          Return Home
         </Link>
       </div>
     );
@@ -68,13 +57,13 @@ const OrderDetails = () => {
         <div className="order-details-header">
           <h1>Order Details</h1>
           <Link
-            to="/orders/history"
+            to="/"
             className="back-link"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to Orders
+            Return Home
           </Link>
         </div>
 
@@ -138,7 +127,7 @@ const OrderDetails = () => {
                     {item.notes && <p>Notes: {item.notes}</p>}
                   </div>
                 </div>
-                <p className="item-price">${(item.price * item.quantity).toFixed(2)}</p>
+                <p className="item-price">KSh{(item.price * item.quantity).toFixed(2)}</p>
               </div>
             ))}
           </div>
@@ -146,15 +135,22 @@ const OrderDetails = () => {
           <div className="summary-section">
             <div className="summary-item">
               <span className="summary-label">Subtotal</span>
-              <span className="summary-value">${order.subtotal.toFixed(2)}</span>
+              <span className="summary-value">KSh
+                {typeof order.subtotal === 'number' ? order.subtotal.toFixed(2) : (order.items && Array.isArray(order.items) ? order.items.reduce((sum, item) => sum + (item.subtotal || 0), 0).toFixed(2) : '0.00')}
+              </span>
             </div>
             <div className="summary-item">
               <span className="summary-label">Tax</span>
-              <span className="summary-value">${order.tax.toFixed(2)}</span>
+              <span className="summary-value">KSh
+                {typeof order.tax === 'number' ? order.tax.toFixed(2) : '0.00'}
+              </span>
             </div>
             <div className="summary-total">
               <span>Total</span>
-              <span>${order.total.toFixed(2)}</span>
+              <span>KSh
+                {typeof order.total === 'number' ? order.total.toFixed(2) :
+                  typeof order.total_amount === 'number' ? order.total_amount.toFixed(2) : '0.00'}
+              </span>
             </div>
           </div>
         </div>

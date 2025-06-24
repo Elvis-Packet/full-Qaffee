@@ -20,12 +20,13 @@ function Home() {
         // Fetch all menu items from backend
         const response = await api.get('/menu/items')
         
+        // The RESTX endpoint returns an array directly, not wrapped in an 'items' property
+        const items = response.data
+        
         // Validate response structure
-        if (!response || !response.data || !Array.isArray(response.data.items)) {
+        if (!response || !response.data || !Array.isArray(response.data)) {
           throw new Error('Invalid response format from server')
         }
-        
-        const items = response.data.items
         
         // Validate each item has required fields
         const validItems = items.filter(item => (
